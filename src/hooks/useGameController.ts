@@ -12,6 +12,7 @@ import {
   togglePause as toggleGamePause,
   type Direction,
   type GameConfig,
+  type GameEvent,
   type GameState,
   type GameStatus,
 } from '../game';
@@ -37,6 +38,8 @@ export interface UseGameControllerOptions {
   readonly createSeed?: () => number;
   readonly scheduler?: FrameScheduler;
   readonly onFinish?: (score: number, status: GameStatus) => void;
+  /** Called after the view with every tick that produced events (e.g. to play sounds). */
+  readonly onEvents?: (events: readonly GameEvent[], state: GameState) => void;
 }
 
 export interface GameController {
@@ -59,6 +62,7 @@ export function useGameController({
   createSeed = createRandomSeed,
   scheduler,
   onFinish,
+  onEvents,
 }: UseGameControllerOptions = {}): GameController {
   const [initialState] = useState(() => createInitialState({ seed: createSeed(), config }));
   const currentRef = useRef(initialState);
@@ -70,6 +74,11 @@ export function useGameController({
   useEffect(() => {
     onFinishRef.current = onFinish;
   }, [onFinish]);
+
+  const onEventsRef = useRef(onEvents);
+  useEffect(() => {
+    onEventsRef.current = onEvents;
+  }, [onEvents]);
 
   const syncSnapshot = useCallback(() => {
     const next = toSnapshot(currentRef.current);
@@ -99,7 +108,10 @@ export function useGameController({
         currentRef.current = state;
         if (state === before) return;
 
-        if (events.length > 0) view.playEvents(events, state);
+        if (events.length > 0) {
+          view.playEvents(events, state);
+          onEventsRef.current?.(events, state);
+        }
         syncSnapshot();
         if (!isGameFinished(before) && isGameFinished(state)) {
           onFinishRef.current?.(getScore(state), state.status);
