@@ -20,6 +20,7 @@ describe('mapKeyToCommand', () => {
     ['Escape', { type: 'pause' }],
     ['Enter', { type: 'confirm' }],
     ['Space', { type: 'confirm' }],
+    ['KeyM', { type: 'toggleSound' }],
   ])('maps %s', (code, expected) => {
     expect(mapKeyToCommand({ code })).toEqual(expected);
   });
@@ -32,5 +33,6 @@ describe('mapKeyToCommand', () => {
     expect(mapKeyToCommand({ code: 'KeyW', ctrlKey: true })).toBeNull();
     expect(mapKeyToCommand({ code: 'KeyD', metaKey: true })).toBeNull();
     expect(mapKeyToCommand({ code: 'ArrowLeft', altKey: true })).toBeNull();
+    expect(mapKeyToCommand({ code: 'KeyM', ctrlKey: true })).toBeNull();
   });
 });

@@ -32,7 +32,7 @@ export function GameOverlay({
         <OverlayPanel title="Snake">
           <ItemLegend />
           <p className={styles.hint}>
-            Setas ou WASD para mover · P para pausar · deslize no celular
+            Setas ou WASD para mover · P para pausar · M para som · deslize no celular
           </p>
           <Button onClick={onStart} autoFocus>
             Jogar

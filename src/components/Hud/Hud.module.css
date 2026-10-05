@@ -31,7 +31,15 @@
   font-variant-numeric: tabular-nums;
 }
 
-.pause {
+.controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.iconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 2.75rem;
   height: 2.75rem;
   border: 1px solid var(--color-border);
@@ -42,16 +50,36 @@
   cursor: pointer;
 }
 
-.pause:hover:not(:disabled) {
+.iconButton:hover:not(:disabled) {
   border-color: var(--color-text-muted);
 }
 
-.pause:focus-visible {
+.iconButton:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 3px;
 }
 
-.pause:disabled {
+.iconButton:disabled {
   opacity: 0.35;
   cursor: not-allowed;
+}
+
+/* Keeps title, score and both buttons on one row on 320px phones. */
+@media (max-width: 380px) {
+  .hud {
+    gap: 0.6rem;
+  }
+
+  .stats {
+    gap: 0.75rem;
+  }
+
+  .controls {
+    gap: 0.375rem;
+  }
+
+  .iconButton {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
 }

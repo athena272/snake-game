@@ -3,7 +3,9 @@ import type { GameCommand } from '../input/commands';
 import { mapKeyToCommand } from '../input/keyboard';
 import type { GameActions } from './useGameController';
 
-export type CommandActions = Pick<GameActions, 'turn' | 'togglePause' | 'confirm'>;
+export interface CommandActions extends Pick<GameActions, 'turn' | 'togglePause' | 'confirm'> {
+  readonly toggleSound: () => void;
+}
 
 export function applyCommand(actions: CommandActions, command: GameCommand): void {
   switch (command.type) {
@@ -15,6 +17,9 @@ export function applyCommand(actions: CommandActions, command: GameCommand): voi
       break;
     case 'confirm':
       actions.confirm();
+      break;
+    case 'toggleSound':
+      actions.toggleSound();
       break;
   }
 }

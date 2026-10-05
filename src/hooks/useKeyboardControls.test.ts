@@ -7,6 +7,7 @@ function setup() {
     turn: vi.fn<CommandActions['turn']>(),
     togglePause: vi.fn<CommandActions['togglePause']>(),
     confirm: vi.fn<CommandActions['confirm']>(),
+    toggleSound: vi.fn<CommandActions['toggleSound']>(),
   };
   const hook = renderHook(() => {
     useKeyboardControls(actions);
@@ -35,6 +36,13 @@ describe('useKeyboardControls', () => {
     fireEvent.keyDown(window, { code: 'Enter' });
     fireEvent.keyDown(window, { code: 'Space' });
     expect(actions.confirm).toHaveBeenCalledTimes(2);
+  });
+
+  it('toggles sound with M, ignoring auto-repeat', () => {
+    const { actions } = setup();
+    fireEvent.keyDown(window, { code: 'KeyM' });
+    fireEvent.keyDown(window, { code: 'KeyM', repeat: true });
+    expect(actions.toggleSound).toHaveBeenCalledOnce();
   });
 
   it('prevents page scrolling for game keys', () => {

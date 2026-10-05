@@ -132,6 +132,30 @@ describe('useGameController', () => {
     expect(view.playEvents).toHaveBeenCalledWith(['died'], expect.anything());
   });
 
+  it('forwards tick events to onEvents alongside the view', () => {
+    const seed = findSeedWithTrapAhead();
+    const onEvents = vi.fn();
+    const { result, advance, view } = setup({ createSeed: () => seed, onEvents });
+    act(() => {
+      result.current.actions.start();
+    });
+    advance(400);
+
+    expect(onEvents).toHaveBeenCalledExactlyOnceWith(['died'], view.playEvents.mock.lastCall?.[1]);
+  });
+
+  it('does not call onEvents on ticks without events', () => {
+    const onEvents = vi.fn();
+    const { result, advance, current } = setup({ onEvents });
+    act(() => {
+      result.current.actions.start();
+    });
+    advance(100);
+
+    expect(current().tick).toBe(1);
+    expect(onEvents).not.toHaveBeenCalled();
+  });
+
   it('restarts with a fresh running game', () => {
     const seed = findSeedWithTrapAhead();
     const { result, advance, current } = setup({ createSeed: () => seed });
