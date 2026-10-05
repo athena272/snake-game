@@ -4,11 +4,9 @@
 
 Releitura moderna do clássico Snake, jogável direto no navegador, no computador ou no celular. A lógica do jogo é TypeScript puro e testado, a renderização usa PixiJS (WebGL) a 60 fps e a interface é feita em React.
 
-**Jogue agora:** _link da Vercel em breve_
+**Jogue agora:** [snake-game-athena272.vercel.app](https://snake-game-athena272.vercel.app/)
 
 ![Gameplay](docs/gameplay.gif)
-
-> _GIF de gameplay em breve._
 
 ## Regras
 
@@ -30,8 +28,9 @@ Itens nunca nascem em cima da cobra nem de outros itens, e a área logo à frent
 | Mover              | Setas, `W` `A` `S` `D` ou `H` `J` `K` `L` | Deslizar o dedo sobre o tabuleiro ou usar o direcional na tela |
 | Pausar / continuar | `P` ou `Esc`                              | Botão "Pausar" no topo                                         |
 | Jogar / reiniciar  | `Enter` ou `Espaço`                       | Botões na tela                                                 |
+| Ligar / tirar som  | `M`                                       | Botão de som no topo                                           |
 
-O direcional na tela aparece por padrão em telas de toque e pode ser mostrado ou escondido a qualquer momento. O jogo pausa sozinho quando a aba fica oculta.
+O direcional na tela aparece por padrão em telas de toque e pode ser mostrado ou escondido a qualquer momento. O jogo pausa sozinho quando a aba fica oculta. Os efeitos sonoros começam ligados, e a escolha de som e do direcional fica salva no navegador.
 
 ## Stack
 
@@ -57,12 +56,14 @@ flowchart LR
   Loop -->|"a cada 100 ms"| Game["Lógica pura (src/game)"]
   Loop -->|"a cada frame"| View["GameView (src/render)"]
   View --> Pixi["PixiJS: grade, itens, cobra e efeitos"]
+  Controller -->|"eventos do tick"| Audio["Efeitos sonoros (src/audio)"]
   Controller --> Storage["Recorde no localStorage (src/services)"]
 ```
 
 - **`src/game`**: estado imutável e função `step(state)` determinística, que devolve o novo estado e os eventos do tick (`ate`, `poisoned`, `died`, `won`). A aleatoriedade vem de um gerador com semente guardada no próprio estado, então qualquer partida pode ser reproduzida nos testes.
 - **`src/engine`**: loop com passo fixo. A lógica roda exatamente a cada 100 ms, independente da taxa de quadros, e o renderer recebe um fator de interpolação para desenhar o movimento suave entre dois ticks.
 - **`src/render`**: renderer em PixiJS carregado sob demanda. As texturas são geradas uma vez e reaproveitadas, os sprites ficam em pools e a interpolação considera a volta pelas bordas. Os efeitos (partículas, flash e tremida) respeitam `prefers-reduced-motion`.
+- **`src/audio`**: efeitos sonoros sintetizados com a Web Audio API, sem arquivos para baixar. Cada evento do tick vira uma sequência de tons, o áudio só é liberado depois de um gesto do usuário (política de autoplay dos navegadores) e qualquer falha deixa o jogo em silêncio, sem quebrar nada.
 - **`src/hooks` e `src/components`**: o estado do jogo fica em refs e o React só renderiza de novo quando muda o status ou a pontuação. O canvas tem estados de carregamento e de erro, com opção de tentar de novo se o WebGL falhar.
 - **`src/input`**: mapeamento de teclas e detecção de swipe como funções puras. Uma fila de direções impede que dois toques rápidos façam a cobra voltar sobre si mesma.
 - **`src/services`**: acesso ao `localStorage` protegido contra falhas (modo privado, cota cheia), com fallback em memória.
