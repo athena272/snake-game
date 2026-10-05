@@ -4,6 +4,7 @@ import type { GameCommand } from './commands';
 const turn = (direction: Direction): GameCommand => ({ type: 'turn', direction });
 const PAUSE: GameCommand = { type: 'pause' };
 const CONFIRM: GameCommand = { type: 'confirm' };
+const TOGGLE_SOUND: GameCommand = { type: 'toggleSound' };
 
 /**
  * Mapped by `KeyboardEvent.code` (physical key), so WASD keeps its position on
@@ -27,6 +28,7 @@ const COMMANDS_BY_CODE: Readonly<Record<string, GameCommand>> = {
   Enter: CONFIRM,
   NumpadEnter: CONFIRM,
   Space: CONFIRM,
+  KeyM: TOGGLE_SOUND,
 };
 
 export interface KeyInput {

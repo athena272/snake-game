@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import styles from './App.module.css';
 import { DirectionPad } from './components/DirectionPad/DirectionPad';
 import { GameCanvas } from './components/GameCanvas/GameCanvas';
@@ -6,9 +6,11 @@ import { Hud } from './components/Hud/Hud';
 import { GameOverlay } from './components/Overlay/GameOverlay';
 import { useDirectionPadPreference } from './hooks/useDirectionPadPreference';
 import { useGameController } from './hooks/useGameController';
+import { useGameSounds } from './hooks/useGameSounds';
 import { useHighScore } from './hooks/useHighScore';
-import { useKeyboardControls } from './hooks/useKeyboardControls';
+import { useKeyboardControls, type CommandActions } from './hooks/useKeyboardControls';
 import { usePrefersReducedMotion } from './hooks/usePrefersReducedMotion';
+import { useSoundPreference } from './hooks/useSoundPreference';
 import { useSwipeControls } from './hooks/useSwipeControls';
 import { createPixiView } from './render/createPixiView';
 
@@ -17,6 +19,8 @@ export function App() {
   const [isNewRecord, setIsNewRecord] = useState(false);
   const reducedMotion = usePrefersReducedMotion();
   const directionPad = useDirectionPadPreference();
+  const sound = useSoundPreference();
+  const { playEvents } = useGameSounds(sound.enabled);
   const swipeSurfaceRef = useRef<HTMLDivElement>(null);
 
   const handleFinish = useCallback(
@@ -26,8 +30,15 @@ export function App() {
     [submitScore],
   );
 
-  const { config, snapshot, actions, attachView } = useGameController({ onFinish: handleFinish });
-  useKeyboardControls(actions);
+  const { config, snapshot, actions, attachView } = useGameController({
+    onFinish: handleFinish,
+    onEvents: playEvents,
+  });
+  const commandActions = useMemo<CommandActions>(
+    () => ({ ...actions, toggleSound: sound.toggle }),
+    [actions, sound.toggle],
+  );
+  useKeyboardControls(commandActions);
   useSwipeControls(swipeSurfaceRef, actions.turn);
 
   return (
@@ -38,7 +49,9 @@ export function App() {
           score={snapshot.score}
           highScore={highScore}
           status={snapshot.status}
+          soundEnabled={sound.enabled}
           onTogglePause={actions.togglePause}
+          onToggleSound={sound.toggle}
         />
       </header>
 

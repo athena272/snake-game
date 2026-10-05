@@ -24,4 +24,15 @@ describe('App', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Pausar' })).toBeEnabled();
   });
+
+  it('toggles sound with M and the HUD button, even without Web Audio support', async () => {
+    render(<App />);
+    expect(screen.getByRole('button', { name: 'Desativar som' })).toBeInTheDocument();
+
+    await userEvent.keyboard('m');
+    expect(screen.getByRole('button', { name: 'Ativar som' })).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Ativar som' }));
+    expect(screen.getByRole('button', { name: 'Desativar som' })).toBeInTheDocument();
+  });
 });
