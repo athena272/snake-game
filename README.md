@@ -6,6 +6,8 @@ Releitura moderna do clássico Snake, jogável direto no navegador, no computado
 
 **Jogue agora:** [snake-game-athena272.vercel.app](https://snake-game-athena272.vercel.app/)
 
+<img width="1157" height="903" alt="image" src="https://github.com/user-attachments/assets/6a3b5d4f-587e-4ff6-bb6c-f33d485ed9f7" />
+
 ![Gameplay](docs/gameplay.gif)
 
 ## Regras
